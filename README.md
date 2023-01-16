@@ -69,37 +69,37 @@ For convenience, this library comes with a few built-in predicates.
 
 ### Builtin predicates
 
-#### IsFunction(string ...$functionNames)
+#### isFunction(string ...$functionNames)
 
 ```php
 use ju1ius\Footprints\Backtrace;
-use ju1ius\Footprints\Predicate\IsFunction;
+use ju1ius\Footprints\Predicate;
 
-$trace = Backtrace::capture()->reject(new IsFunction(
+$trace = Backtrace::capture()->reject(Predicate::isFunction(
     'foo',
     'Acme\\foobar',
 ));
 ```
 
-#### IsClass(string ...$classNames)
+#### isClass(string ...$classNames)
 
 ```php
 use ju1ius\Footprints\Backtrace;
-use ju1ius\Footprints\Predicate\IsClass;
+use ju1ius\Footprints\Predicate;
 
-$trace = Backtrace::capture()->reject(new IsClass(
+$trace = Backtrace::capture()->reject(Predicate::isClass(
     'Foo',
     'Acme\\FooBar',
 ));
 ```
 
-#### IsMethod(string ...$methodNames)
+#### isMethod(string ...$methodNames)
 
 ```php
 use ju1ius\Footprints\Backtrace;
-use ju1ius\Footprints\Predicate\IsMethod;
+use ju1ius\Footprints\Predicate;
 
-$trace = Backtrace::capture()->reject(new IsMethod(
+$trace = Backtrace::capture()->reject(Predicate::isMethod(
     // rejects method `bar` of class `Foo`
     'Foo->bar',
     // rejects static method `baz` of class `Acme\FooBar`
@@ -107,27 +107,27 @@ $trace = Backtrace::capture()->reject(new IsMethod(
 ));
 ```
 
-#### IsNamespace(string ...$namespaces)
+#### isNamespace(string ...$namespaces)
 
 ```php
 use ju1ius\Footprints\Backtrace;
-use ju1ius\Footprints\Predicate\IsNamespace;
+use ju1ius\Footprints\Predicate;
 
-$trace = Backtrace::capture()->reject(new IsNamespace(
+$trace = Backtrace::capture()->reject(Predicate::isNamespace(
     // rejects everything in namespace `Acme\Foo` and all it's sub-namespaces.
     'Acme\\Foo',
 ));
 ```
 
-#### IsFile(string ...$globPatterns)
+#### isFile(string ...$globPatterns)
 
 The `IsFile` predicate accepts glob patterns in the syntax accepted by `fnmatch`.
 
 ```php
 use ju1ius\Footprints\Backtrace;
-use ju1ius\Footprints\Predicate\IsFile;
+use ju1ius\Footprints\Predicate;
 
-$trace = Backtrace::capture()->reject(new IsFile(
+$trace = Backtrace::capture()->reject(Predicate::isFile(
     // rejects everything in `/src/foo.php`
     '/src/foo.php',
     // rejects everything in the `/vendor` directory
@@ -139,24 +139,20 @@ $trace = Backtrace::capture()->reject(new IsFile(
 
 ### Composing predicates
 
-Predicates are composable using the `IsAnd`, `IsOr` and `IsNot` predicates.
+Predicates are composable using the `Predicate::and()`, `Predicate::or()` and `Predicate::not()` predicates.
 
 ```php
 use ju1ius\Footprints\Backtrace;
-use ju1ius\Footprints\Predicate\{
-    IsAnd,
-    IsFunction,
-    IsOr
-};
+use ju1ius\Footprints\Predicate;
 
 // The following filters out:
 // * Foo::bar() and Bar::bar() methods (whether static or not)
 // * top-level baz() and qux() functions
-$trace = Backtrace::capture()->reject(new IsOr(
-    new IsAnd(
+$trace = Backtrace::capture()->reject(Predicate::or(
+    Predicate::and(
         fn(Frame $frame) => \in_array($frame->class, ['Foo', 'Bar']), 
         fn(Frame $frame) => $frame->function === 'bar', 
     ),
-    new IsFunction('baz', 'qux'),
+    Predicate::isFunction('baz', 'qux'),
 ));
 ```
