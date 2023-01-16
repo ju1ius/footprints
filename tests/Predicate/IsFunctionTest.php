@@ -1,54 +1,59 @@
 <?php declare(strict_types=1);
 
-namespace ju1ius\Footprints\Tests\Filter;
+namespace ju1ius\Footprints\Tests\Predicate;
 
-use ju1ius\Footprints\Filter\IgnoreFunctions;
 use ju1ius\Footprints\Frame;
+use ju1ius\Footprints\Predicate\IsFunction;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 
-final class IgnoreFunctionsTest extends TestCase
+final class IsFunctionTest extends TestCase
 {
     /**
-     * @dataProvider ignoreFunctionsProvider
+     * @dataProvider predicateProvider
      */
-    public function testItIgnoreFunctions(array $ignored, Frame $input, bool $expected): void
+    public function testPredicate(array $functions, Frame $input, bool $expected): void
     {
-        $filter = new IgnoreFunctions(...$ignored);
-        Assert::assertSame($expected, $filter($input, 0, []));
+        $predicate = new IsFunction(...$functions);
+        Assert::assertSame($expected, $predicate($input, 0, []));
     }
 
-    public static function ignoreFunctionsProvider(): iterable
+    public static function predicateProvider(): iterable
     {
-        yield 'empty filter' => [
+        yield 'no functions matches any function' => [
             [],
             new Frame('<test>', 0, 'foo'),
             true,
         ];
-        yield 'excludes function' => [
+        yield 'no functions doesnt match methods' => [
+            [],
+            new Frame('<test>', 0, 'bar', 'Foo'),
+            false,
+        ];
+        yield 'matches function' => [
             ['foo'],
             new Frame('<test>', 0, 'foo'),
-            false,
+            true,
         ];
         yield 'non-matching namespace' => [
             ['bar'],
             new Frame('<test>', 0, 'Foo\\bar'),
-            true,
+            false,
         ];
         yield 'matching namespace' => [
             ['Foo\\bar'],
             new Frame('<test>', 0, 'Foo\\bar'),
-            false,
+            true,
         ];
         yield 'never matches for methods' => [
             ['bar'],
             new Frame('<test>', 0, 'bar', class: 'Foo', type: '->'),
-            true,
+            false,
         ];
         yield 'never matches for methods #2' => [
             ['Foo\\bar'],
             new Frame('<test>', 0, 'bar', class: 'Foo', type: '->'),
-            true,
+            false,
         ];
     }
 }

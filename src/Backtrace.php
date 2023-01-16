@@ -60,11 +60,27 @@ final class Backtrace implements IteratorAggregate, Countable, Stringable
      * @param callable(Frame, int, Frame[]):bool $predicate
      * @return self
      */
-    public function filter(callable $predicate): self
+    public function accept(callable $predicate): self
     {
         $frames = [];
         foreach ($this->frames as $index => $frame) {
             if ($predicate($frame, $index, $this->frames)) {
+                $frames[] = $frame;
+            }
+        }
+
+        return new self($frames);
+    }
+
+    /**
+     * @param callable(Frame, int, Frame[]):bool $predicate
+     * @return self
+     */
+    public function reject(callable $predicate): self
+    {
+        $frames = [];
+        foreach ($this->frames as $index => $frame) {
+            if (!$predicate($frame, $index, $this->frames)) {
                 $frames[] = $frame;
             }
         }

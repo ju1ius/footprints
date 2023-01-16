@@ -1,25 +1,25 @@
 <?php declare(strict_types=1);
 
-namespace ju1ius\Footprints\Filter;
+namespace ju1ius\Footprints\Predicate;
 
 use ju1ius\Footprints\Frame;
 use ju1ius\Footprints\FrameFilter;
 
-final class FilterChain implements FrameFilter
+final class IsAnd implements FrameFilter
 {
-    /**
-     * @var array<callable(Frame, int, Frame[]): bool>
-     */
     private readonly array $predicates;
 
     /**
-     * @param callable(Frame, int, Frame[]): bool ...$predicates
+     * @param callable(Frame, int, Frame[]):bool ...$predicates
      */
     public function __construct(callable ...$predicates)
     {
         $this->predicates = $predicates;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function __invoke(Frame $frame, int $index, array $stack): bool
     {
         foreach ($this->predicates as $predicate) {

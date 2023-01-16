@@ -1,59 +1,64 @@
 <?php declare(strict_types=1);
 
-namespace ju1ius\Footprints\Tests\Filter;
+namespace ju1ius\Footprints\Tests\Predicate;
 
-use ju1ius\Footprints\Filter\IgnoreNamespaces;
 use ju1ius\Footprints\Frame;
+use ju1ius\Footprints\Predicate\IsNamespace;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 
-final class IgnoreNamespacesTest extends TestCase
+final class IsNamespaceTest extends TestCase
 {
     /**
-     * @dataProvider ignoreNamespacesProvider
+     * @dataProvider predicateProvider
      */
-    public function testIgnoreNamespaces(array $ignored, Frame $input, bool $expected): void
+    public function testPredicate(array $namespaces, Frame $input, bool $expected): void
     {
-        $filter = new IgnoreNamespaces(...$ignored);
-        Assert::assertSame($expected, $filter($input, 0, []));
+        $predicate = new IsNamespace(...$namespaces);
+        Assert::assertSame($expected, $predicate($input, 0, []));
     }
 
-    public static function ignoreNamespacesProvider(): iterable
+    public static function predicateProvider(): iterable
     {
-        yield 'empty filter' => [
+        yield 'no namespace matches any namespace' => [
             [],
             new Frame('<test>', 0, 'Foo\\bar'),
             true,
         ];
+        yield 'no namespace doesnt match top level item' => [
+            [],
+            new Frame('<test>', 0, 'foo'),
+            false,
+        ];
         yield 'doesnt match function w/o namespace' => [
             ['Foo'],
             new Frame('<test>', 0, 'Foo'),
-            true,
+            false,
         ];
         yield 'doesnt match method w/o namespace' => [
             ['Foo'],
             new Frame('<test>', 0, 'bar', class: 'Foo'),
-            true,
+            false,
         ];
         yield 'doesnt match incomplete namespace prefix' => [
             ['Foo'],
             new Frame('<test>', 0, 'FooBar\\test'),
-            true,
+            false,
         ];
         yield 'matches namespaced function' => [
             ['Foo'],
             new Frame('<test>', 0, 'Foo\\bar'),
-            false,
+            true,
         ];
         yield 'matches namespaced method' => [
             ['Foo'],
             new Frame('<test>', 0, 'bar', class: 'Foo\\Bar'),
-            false,
+            true,
         ];
         yield 'matches sub-namespaces' => [
             ['Foo\\Bar'],
             new Frame('<test>', 0, 'baz', class: 'Foo\\Bar\\Baz'),
-            false,
+            true,
         ];
     }
 }

@@ -39,100 +39,124 @@ try {
 
 ### Filtering stack traces
 
-The `Backtrace::filter(callable $predicate)` accepts a `callable` and returns a filtered `Backtrace` object.
+To filter backtraces, the `Backtrace::accept()` and `Backtrace::reject()` methods are available,
+both of which accept a `callable` predicate and returns a filtered `Backtrace` object.
 
-The `$predicate` argument has the following signature: `callable(Frame, int, Frame[]): bool)`:
-it takes a Frame, it's index and the whole frames array and returns a `bool` indicating whether the frame
-should be kept or not (semantics are similar to `array_filter()`).
+The `$predicate` argument has the following signature: `callable(Frame, int, Frame[]): bool`:
+it takes a Frame, it's index and the whole frames array and returns a boolean indicating
+whether the predicate matched.
+
+`Backtrace::accept()` will accept (keep) the frames for which `$predicate` returns a truthy value,
+while `Backtrace::reject()` will reject (filter-out) the frames for which `$predicate` returns a truthy value.
 
 ```php
 use ju1ius\Footprints\Backtrace;
 
+// Keep only frames for:
+// * the top-level foo() function
+// * any method named foo() regardless of it's class.
 $trace = Backtrace::capture()
-    ->filter(fn(Frame $frame, int $index, array $stack) => $frame->function === 'foo');
+    ->accept(fn(Frame $frame) => $frame->function === 'foo');
+
+// Filters out frames for:
+// * the top-level foo() function
+// * any method named foo() regardless of it's class.
+$trace = Backtrace::capture()
+    ->reject(fn(Frame $frame) => $frame->function === 'foo');
 ```
 
-For convenience, this library comes with a few filtering predicates.
+For convenience, this library comes with a few built-in predicates.
 
-### Ignoring functions
+### Builtin predicates
+
+#### IsFunction(string ...$functionNames)
 
 ```php
 use ju1ius\Footprints\Backtrace;
-use ju1ius\Footprints\Filter\IgnoreFunctions;
+use ju1ius\Footprints\Predicate\IsFunction;
 
-$trace = Backtrace::capture()->filter(new IgnoreFunctions(
+$trace = Backtrace::capture()->reject(new IsFunction(
     'foo',
     'Acme\\foobar',
 ));
 ```
 
-### Ignoring classes
+#### IsClass(string ...$classNames)
 
 ```php
 use ju1ius\Footprints\Backtrace;
-use ju1ius\Footprints\Filter\IgnoreClasses;
+use ju1ius\Footprints\Predicate\IsClass;
 
-$trace = Backtrace::capture()->filter(new IgnoreClasses(
+$trace = Backtrace::capture()->reject(new IsClass(
     'Foo',
     'Acme\\FooBar',
 ));
 ```
 
-### Ignoring class methods
+#### IsMethod(string ...$methodNames)
 
 ```php
 use ju1ius\Footprints\Backtrace;
-use ju1ius\Footprints\Filter\IgnoreMethods;
+use ju1ius\Footprints\Predicate\IsMethod;
 
-$trace = Backtrace::capture()->filter(new IgnoreMethods(
-    // ignores method `bar` of class `Foo`
+$trace = Backtrace::capture()->reject(new IsMethod(
+    // rejects method `bar` of class `Foo`
     'Foo->bar',
-    // ignores static method `baz` of class `Acme\FooBar`
+    // rejects static method `baz` of class `Acme\FooBar`
     'Acme\\FooBar::baz',
 ));
 ```
 
-### Ignoring whole namespaces
+#### IsNamespace(string ...$namespaces)
 
 ```php
 use ju1ius\Footprints\Backtrace;
-use ju1ius\Footprints\Filter\IgnoreNamespaces;
+use ju1ius\Footprints\Predicate\IsNamespace;
 
-$trace = Backtrace::capture()->filter(new IgnoreNamespaces(
-    // ignores everything in namespace `Acme\Foo` and all it's sub-namespaces.
+$trace = Backtrace::capture()->reject(new IsNamespace(
+    // rejects everything in namespace `Acme\Foo` and all it's sub-namespaces.
     'Acme\\Foo',
 ));
 ```
 
-### Ignoring files
+#### IsFile(string ...$globPatterns)
 
-The `IgnoreFiles` filter accepts glob patterns in the syntax accepted by `fnmatch`.
+The `IsFile` predicate accepts glob patterns in the syntax accepted by `fnmatch`.
 
 ```php
 use ju1ius\Footprints\Backtrace;
-use ju1ius\Footprints\Filter\IgnoreFiles;
+use ju1ius\Footprints\Predicate\IsFile;
 
-$trace = Backtrace::capture()->filter(new IgnoreFiles(
-    // ignores everything in `/src/foo.php`
+$trace = Backtrace::capture()->reject(new IsFile(
+    // rejects everything in `/src/foo.php`
     '/src/foo.php',
-    // ignores everything in the `/vendor` directory
+    // rejects everything in the `/vendor` directory
     '/vendor/*',
-    // ignores files having a `.inc.php` extension
+    // rejects files having a `.inc.php` extension
     '*.inc.php',
 ));
 ```
 
 ### Composing predicates
 
-Filter predicates are composable using the `FilterChain` class.
+Predicates are composable using the `IsAnd`, `IsOr` and `IsNot` predicates.
 
 ```php
 use ju1ius\Footprints\Backtrace;
-use ju1ius\Footprints\Filter\FilterChain;
-use ju1ius\Footprints\Filter\IgnoreClasses;
+use ju1ius\Footprints\Predicate\{
+    IsAnd,
+    IsFunction,
+    IsOr
+};
 
-$trace = Backtrace::capture()->filter(new FilterChain(
-    new IgnoreClasses('Acme\\Foo'),
-    fn(Frame $frame) => $frame->function === 'foobar', 
+// The following filters out:
+// * Foo::bar() and Bar::bar() methods (whether static or not)
+// * top-level baz() and qux() functions
+$trace = Backtrace::capture()->reject(new IsOr(
+    new IsAnd(
+        fn(Frame $frame) => \in_array($frame->class, ['Foo', 'Bar']), 
+        fn(Frame $frame) => $frame->function === 'bar', 
+    ),
+    new IsFunction('baz', 'qux'),
 ));
 ```

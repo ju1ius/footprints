@@ -67,11 +67,18 @@ final class BacktraceTest extends TestCase
         Assert::assertSame($bt->frames(), iterator_to_array($bt));
     }
 
-    public function testFilter(): void
+    public function testAccept(): void
     {
         $bt = Backtrace::capture();
-        Assert::assertNotEmpty($bt->filter(fn() => true)->frames());
-        Assert::assertEmpty($bt->filter(fn() => false)->frames());
+        Assert::assertNotEmpty($bt->accept(fn() => true)->frames());
+        Assert::assertEmpty($bt->accept(fn() => false)->frames());
+    }
+
+    public function testReject(): void
+    {
+        $bt = Backtrace::capture();
+        Assert::assertNotEmpty($bt->reject(fn() => false)->frames());
+        Assert::assertEmpty($bt->reject(fn() => true)->frames());
     }
 
     public function testMap(): void
