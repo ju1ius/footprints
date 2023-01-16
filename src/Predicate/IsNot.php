@@ -3,9 +3,9 @@
 namespace ju1ius\Footprints\Predicate;
 
 use ju1ius\Footprints\Frame;
-use ju1ius\Footprints\FrameFilter;
+use ju1ius\Footprints\PredicateInterface;
 
-final class IsNot implements FrameFilter
+final class IsNot implements PredicateInterface
 {
     private readonly \Closure $predicate;
 

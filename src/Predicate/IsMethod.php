@@ -3,10 +3,10 @@
 namespace ju1ius\Footprints\Predicate;
 
 use ju1ius\Footprints\Frame;
-use ju1ius\Footprints\FrameFilter;
+use ju1ius\Footprints\PredicateInterface;
 use ju1ius\Footprints\FrameType;
 
-final class IsMethod implements FrameFilter
+final class IsMethod implements PredicateInterface
 {
     /**
      * @var array<string, true>

@@ -2,7 +2,7 @@
 
 namespace ju1ius\Footprints;
 
-interface FrameFilter
+interface PredicateInterface
 {
     /**
      * @param Frame[] $stack

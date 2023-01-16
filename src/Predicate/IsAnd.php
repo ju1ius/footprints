@@ -3,9 +3,9 @@
 namespace ju1ius\Footprints\Predicate;
 
 use ju1ius\Footprints\Frame;
-use ju1ius\Footprints\FrameFilter;
+use ju1ius\Footprints\PredicateInterface;
 
-final class IsAnd implements FrameFilter
+final class IsAnd implements PredicateInterface
 {
     private readonly array $predicates;
 
