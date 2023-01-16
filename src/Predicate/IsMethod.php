@@ -3,8 +3,8 @@
 namespace ju1ius\Footprints\Predicate;
 
 use ju1ius\Footprints\Frame;
-use ju1ius\Footprints\PredicateInterface;
 use ju1ius\Footprints\FrameType;
+use ju1ius\Footprints\PredicateInterface;
 
 final class IsMethod implements PredicateInterface
 {

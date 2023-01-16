@@ -51,6 +51,7 @@ while `Backtrace::reject()` will reject (filter-out) the frames for which `$pred
 
 ```php
 use ju1ius\Footprints\Backtrace;
+use ju1ius\Footprints\Frame;
 
 // Keep only frames for:
 // * the top-level foo() function
@@ -143,6 +144,7 @@ Predicates are composable using the `Predicate::and()`, `Predicate::or()` and `P
 
 ```php
 use ju1ius\Footprints\Backtrace;
+use ju1ius\Footprints\Frame;
 use ju1ius\Footprints\Predicate;
 
 // The following filters out:
