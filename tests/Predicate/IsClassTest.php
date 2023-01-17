@@ -22,32 +22,32 @@ final class IsClassTest extends TestCase
     {
         yield 'no class name matches any class' => [
             [],
-            new Frame('<test>', 0, 'foo', class: 'Foo'),
+            new Frame('foo', class: 'Foo'),
             true,
         ];
         yield 'no class name doesnt match functions' => [
             [],
-            new Frame('<test>', 0, 'foo'),
+            new Frame('foo'),
             false,
         ];
         yield 'never matches functions' => [
             ['Foo'],
-            new Frame('<test>', 0, 'Foo'),
+            new Frame('Foo'),
             false,
         ];
         yield 'matches classes' => [
             ['Foo'],
-            new Frame('<test>', 0, 'bar', class: 'Foo'),
+            new Frame('bar', class: 'Foo'),
             true,
         ];
         yield 'matches namespaced classes' => [
             ['Foo\\Bar'],
-            new Frame('<test>', 0, 'baz', class: 'Foo\\Bar'),
+            new Frame('baz', class: 'Foo\\Bar'),
             true,
         ];
         yield 'doesnt match in other namespace' => [
             ['Bar'],
-            new Frame('<test>', 0, 'baz', class: 'Foo\\Bar'),
+            new Frame('baz', class: 'Foo\\Bar'),
             false,
         ];
     }

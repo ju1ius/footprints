@@ -19,6 +19,10 @@ final class IsFile implements PredicateInterface
 
     public function __invoke(Frame $frame, int $index, array $stack): bool
     {
+        if (!$frame->file) {
+            return false;
+        }
+
         if (!$this->globs) {
             return true;
         }

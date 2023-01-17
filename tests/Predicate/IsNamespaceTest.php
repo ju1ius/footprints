@@ -22,42 +22,42 @@ final class IsNamespaceTest extends TestCase
     {
         yield 'no namespace matches any namespace' => [
             [],
-            new Frame('<test>', 0, 'Foo\\bar'),
+            new Frame('Foo\\bar'),
             true,
         ];
         yield 'no namespace doesnt match top level item' => [
             [],
-            new Frame('<test>', 0, 'foo'),
+            new Frame('foo'),
             false,
         ];
         yield 'doesnt match function w/o namespace' => [
             ['Foo'],
-            new Frame('<test>', 0, 'Foo'),
+            new Frame('Foo'),
             false,
         ];
         yield 'doesnt match method w/o namespace' => [
             ['Foo'],
-            new Frame('<test>', 0, 'bar', class: 'Foo'),
+            new Frame('bar', 'Foo'),
             false,
         ];
         yield 'doesnt match incomplete namespace prefix' => [
             ['Foo'],
-            new Frame('<test>', 0, 'FooBar\\test'),
+            new Frame('FooBar\\test'),
             false,
         ];
         yield 'matches namespaced function' => [
             ['Foo'],
-            new Frame('<test>', 0, 'Foo\\bar'),
+            new Frame('Foo\\bar'),
             true,
         ];
         yield 'matches namespaced method' => [
             ['Foo'],
-            new Frame('<test>', 0, 'bar', class: 'Foo\\Bar'),
+            new Frame('bar', 'Foo\\Bar'),
             true,
         ];
         yield 'matches sub-namespaces' => [
             ['Foo\\Bar'],
-            new Frame('<test>', 0, 'baz', class: 'Foo\\Bar\\Baz'),
+            new Frame('baz', 'Foo\\Bar\\Baz'),
             true,
         ];
     }

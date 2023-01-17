@@ -13,7 +13,7 @@ final class IsAndTest extends TestCase
     {
         $true = fn() => true;
         $false = fn() => false;
-        $frame = new Frame('<test>', 0, 'foo');
+        $frame = new Frame('foo', null, null, '<test>', 0);
 
         $predicate = new IsAnd($true, $true);
         Assert::assertTrue($predicate($frame, 0, []));

@@ -22,37 +22,37 @@ final class IsFunctionTest extends TestCase
     {
         yield 'no functions matches any function' => [
             [],
-            new Frame('<test>', 0, 'foo'),
+            new Frame('foo'),
             true,
         ];
         yield 'no functions doesnt match methods' => [
             [],
-            new Frame('<test>', 0, 'bar', 'Foo'),
+            new Frame('bar', 'Foo'),
             false,
         ];
         yield 'matches function' => [
             ['foo'],
-            new Frame('<test>', 0, 'foo'),
+            new Frame('foo'),
             true,
         ];
         yield 'non-matching namespace' => [
             ['bar'],
-            new Frame('<test>', 0, 'Foo\\bar'),
+            new Frame('Foo\\bar'),
             false,
         ];
         yield 'matching namespace' => [
             ['Foo\\bar'],
-            new Frame('<test>', 0, 'Foo\\bar'),
+            new Frame('Foo\\bar'),
             true,
         ];
         yield 'never matches for methods' => [
             ['bar'],
-            new Frame('<test>', 0, 'bar', class: 'Foo', type: '->'),
+            new Frame('bar', class: 'Foo', type: '->'),
             false,
         ];
         yield 'never matches for methods #2' => [
             ['Foo\\bar'],
-            new Frame('<test>', 0, 'bar', class: 'Foo', type: '->'),
+            new Frame('bar', class: 'Foo', type: '->'),
             false,
         ];
     }

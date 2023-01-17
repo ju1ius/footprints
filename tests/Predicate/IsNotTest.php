@@ -13,7 +13,7 @@ final class IsNotTest extends TestCase
     {
         $notTrue = new IsNot(fn() => true);
         $notFalse = new IsNot(fn() => false);
-        $frame = new Frame('<test>', 0, 'foo');
+        $frame = new Frame('foo', null, null, '<test>', 0);
 
         Assert::assertFalse($notTrue($frame, 0, []));
         Assert::assertTrue($notFalse($frame, 0, []));

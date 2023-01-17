@@ -22,27 +22,27 @@ final class IsFileTest extends TestCase
     {
         yield 'no globs matches anything' => [
             [],
-            new Frame('foo.php', 0, 'foo'),
+            new Frame('foo', file: 'foo.php'),
             true,
         ];
         yield 'no match' => [
             ['*.html'],
-            new Frame('/vendor/foo/bar.php', 0, 'foo'),
+            new Frame('foo', file: '/vendor/foo/bar.php'),
             false,
         ];
         yield 'exact match' => [
             ['/vendor/foo/bar.php'],
-            new Frame('/vendor/foo/bar.php', 0, 'foo'),
+            new Frame('foo', file: '/vendor/foo/bar.php'),
             true,
         ];
         yield 'star match' => [
             ['*.php'],
-            new Frame('/vendor/foo/bar.php', 0, 'foo'),
+            new Frame('foo', file: '/vendor/foo/bar.php'),
             true,
         ];
         yield 'star match directory' => [
             ['/vendor/*'],
-            new Frame('/vendor/foo/bar.php', 0, 'foo'),
+            new Frame('foo', file: '/vendor/foo/bar.php'),
             true,
         ];
     }

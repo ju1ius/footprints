@@ -11,11 +11,11 @@ final class Frame implements Stringable
     private readonly ?string $sep;
 
     public function __construct(
-        public readonly string $file,
-        public readonly int $line,
         public readonly string $function,
         public readonly ?string $class = null,
         ?string $type = null,
+        public readonly ?string $file = null,
+        public readonly int $line = 0,
         public readonly ?object $object = null,
         public readonly array $args = [],
     ) {
@@ -55,9 +55,15 @@ final class Frame implements Stringable
 
     public function __toString(): string
     {
+        $location = match ($this->file) {
+            null => '[internal function]',
+            default => sprintf('%s(%d)', $this->file, $this->line),
+        };
+
         if (($class = $this->class) && str_starts_with($class, 'class@anonymous')) {
             $class = 'class@anonymous';
         }
+
         $args = [];
         if ($this->args) {
             foreach ($this->args as $arg) {
@@ -73,9 +79,8 @@ final class Frame implements Stringable
         }
 
         return sprintf(
-            '%s(%d): %s%s%s(%s)',
-            $this->file,
-            $this->line,
+            '%s: %s%s%s(%s)',
+            $location,
             $class ?? '',
             $this->sep ?? '',
             $this->function,

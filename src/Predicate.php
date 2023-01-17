@@ -6,6 +6,7 @@ use ju1ius\Footprints\Predicate\IsAnd;
 use ju1ius\Footprints\Predicate\IsClass;
 use ju1ius\Footprints\Predicate\IsFile;
 use ju1ius\Footprints\Predicate\IsFunction;
+use ju1ius\Footprints\Predicate\IsInternal;
 use ju1ius\Footprints\Predicate\IsMethod;
 use ju1ius\Footprints\Predicate\IsNamespace;
 use ju1ius\Footprints\Predicate\IsNot;
@@ -88,5 +89,10 @@ final class Predicate
     public static function isNamespace(string ...$namespaces): callable
     {
         return new IsNamespace(...$namespaces);
+    }
+
+    public static function isInternal(): callable
+    {
+        return new IsInternal();
     }
 }

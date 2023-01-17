@@ -22,37 +22,37 @@ final class IsMethodTest extends TestCase
     {
         yield 'no methods matches any method' => [
             [],
-            new Frame('<test>', 0, 'foo', class: 'Foo'),
+            new Frame('foo', 'Foo'),
             true,
         ];
         yield 'no methods doesnt match functions' => [
             [],
-            new Frame('<test>', 0, 'foo'),
+            new Frame('foo'),
             false,
         ];
         yield 'matches method' => [
             ['Foo->bar'],
-            new Frame('<test>', 0, 'bar', class: 'Foo', type: '->'),
+            new Frame('bar', 'Foo', '->'),
             true,
         ];
         yield 'matches static method' => [
             ['Foo::bar'],
-            new Frame('<test>', 0, 'bar', class: 'Foo', type: '::'),
+            new Frame('bar', 'Foo', '::'),
             true,
         ];
         yield 'matches namespaced method' => [
             ['Foo\\Bar->baz'],
-            new Frame('<test>', 0, 'baz', class: 'Foo\\Bar', type: '->'),
+            new Frame('baz', 'Foo\\Bar', '->'),
             true,
         ];
         yield 'matches namespaced static method' => [
             ['Foo\\Bar::baz'],
-            new Frame('<test>', 0, 'baz', class: 'Foo\\Bar', type: '::'),
+            new Frame('baz', 'Foo\\Bar', '::'),
             true,
         ];
         yield 'doesnt match functions' => [
             ['foo'],
-            new Frame('<test>', 0, 'foo'),
+            new Frame('foo'),
             false,
         ];
     }

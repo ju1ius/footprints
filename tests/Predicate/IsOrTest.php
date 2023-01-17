@@ -11,7 +11,7 @@ final class IsOrTest extends TestCase
 {
     public function testPredicate(): void
     {
-        $frame = new Frame('<test>', 0, 'foo');
+        $frame = new Frame('foo', null, null, '<test>', 0);
 
         $predicate = new IsOr(fn() => false, fn() => false);
         Assert::assertFalse($predicate($frame, 0, []));

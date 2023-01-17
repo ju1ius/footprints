@@ -11,7 +11,7 @@ final class FrameTest extends TestCase
 {
     public function testOfIdentity(): void
     {
-        $frame = new Frame('<test>', 0, 'foo');
+        $frame = new Frame('foo', null, null, '<test>', 0);
         Assert::assertSame($frame, Frame::of($frame));
     }
 
@@ -20,10 +20,7 @@ final class FrameTest extends TestCase
      */
     public function testFrameType(array $args, FrameType $expected): void
     {
-        $frame = Frame::of(array_merge($args, [
-            'file' => '<test>',
-            'line' => 0,
-        ]));
+        $frame = Frame::of($args);
         Assert::assertSame($expected, $frame->type);
     }
 
