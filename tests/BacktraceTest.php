@@ -101,4 +101,15 @@ final class BacktraceTest extends TestCase
         [$bt, $expected] = $foo->bar($this, true, "foo", 42, 66.6, []);
         Assert::assertSame($expected, (string)$bt);
     }
+
+    public function testToStringInternal(): void
+    {
+        [[$bt, $expected]] = array_map(function() {
+            $bt = Backtrace::capture();
+            ob_start();
+            \debug_print_backtrace();
+            return [$bt, ob_get_clean()];
+        }, [42]);
+        Assert::assertSame($expected, (string)$bt);
+    }
 }

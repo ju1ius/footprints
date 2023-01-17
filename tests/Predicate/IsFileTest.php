@@ -25,6 +25,11 @@ final class IsFileTest extends TestCase
             new Frame('foo', file: 'foo.php'),
             true,
         ];
+        yield 'internal functions never match' => [
+            [],
+            new Frame('foo'),
+            false,
+        ];
         yield 'no match' => [
             ['*.html'],
             new Frame('foo', file: '/vendor/foo/bar.php'),
